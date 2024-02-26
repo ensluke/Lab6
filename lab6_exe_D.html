@@ -47,12 +47,59 @@ Description : API Usage.
     <script>
         // Function to fetch and display students
         async function fetchStudents() {
-            
+            fetch("https://65dcfcd5e7edadead7ed406d.mockapi.io/Student")
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+                return response.json(); // This returns a promise containing the JSON data
+            })
+            .then(data => {
+                console.log(data);
+                let studentList = document.getElementById("studentList");
+
+                // Add the students to the list
+                data.forEach(student => {
+                    let studentItem = document.createElement("li");
+                    studentItem.innerText = student.name;
+                    // Add the listener to get courses
+                    studentItem.addEventListener('click', () => fetchCourses(student.id));
+                    studentList.appendChild(studentItem);
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
         }
 
         // Function to fetch and display courses for a student
         async function fetchCourses(studentId) {
-            
+            fetch("https://65dcfcd5e7edadead7ed406d.mockapi.io/Student/" + studentId + "/courses")
+            .then(response => {
+                if (!response.ok) {
+                throw new Error('Network response was not ok');
+                }
+                return response.json(); // This returns a promise containing the JSON data
+            })
+            .then(data => {
+                console.log(data);
+                let courseList = document.getElementById("courseList");
+
+                // Remove previous courses
+                while (courseList.firstChild) {
+                    courseList.removeChild(courseList.firstChild);
+                }
+
+                // Add new courses to the list
+                data.forEach(course => {
+                    let courseItem = document.createElement("li");
+                    courseItem.innerText = `${course.name} (Unit: ${course.unit})`;
+                    courseList.appendChild(courseItem);
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
         }
 
         // Fetch students on window load
